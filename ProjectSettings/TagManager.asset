@@ -41,15 +41,12 @@ TagManager:
   - name: Map
     uniqueID: 1559385409
     locked: 0
-  - name: Floor
-    uniqueID: 3946492857
-    locked: 0
   - name: Building
     uniqueID: 427015581
     locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Particles
+  - name: Fonts
     uniqueID: 2894933863
     locked: 0

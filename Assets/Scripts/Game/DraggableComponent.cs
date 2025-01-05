@@ -1,24 +1,31 @@
-using Game;
 using Game.Interfaces;
 using UnityEngine;
 
-public class DraggableComponent : MonoBehaviour, IDraggable
+namespace Game
 {
-    [SerializeField]
-    private BuildingData buildingData;
-
-    public Transform GetTransform()
+    public class DraggableComponent : MonoBehaviour, IDraggable
     {
-        return transform;
-    }
+        [SerializeField]
+        private BuildingData buildingData;
 
-    public bool IsDraggingEnabled()
-    {
-        return buildingData.isDraggable;
-    }
+        public Transform GetTransform()
+        {
+            return transform;
+        }
 
-    public void UpdatePosition(Vector2 position)
-    {
-        transform.position = position;
+        public bool IsDraggingEnabled()
+        {
+            return buildingData.isDraggable;
+        }
+
+        public void UpdatePosition(Vector2 position)
+        {
+            transform.position = position;
+        }
+
+        public void Interact()
+        {
+            Debug.Log(buildingData.name);
+        }
     }
 }

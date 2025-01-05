@@ -7,6 +7,5 @@ namespace Game
     {
         public int id;
         public bool isDraggable;
-        public Sprite sprite;
     }
 }

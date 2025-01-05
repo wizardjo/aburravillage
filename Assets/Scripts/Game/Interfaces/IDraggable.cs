@@ -7,5 +7,6 @@ namespace Game.Interfaces
         public Transform GetTransform();
         public bool IsDraggingEnabled();
         public void UpdatePosition(Vector2 position);
+        void Interact();
     }
 }

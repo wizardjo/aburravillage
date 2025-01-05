@@ -1,12 +1,12 @@
-using System;
+
 using Cinemachine;
+using DG.Tweening;
+using Domain.Utilities;
 using Game.Interfaces;
 using UnityEngine;
 
 namespace Domain.Managers
 {
-    using Domain.Utilities;
-
     public class CameraController : MonoBehaviour
     {
         private CinemachineVirtualCamera cinemachineVirtualCamera;
@@ -14,6 +14,8 @@ namespace Domain.Managers
         private IDraggable selectedObject;
         private bool touchStarted;
         private bool isDragging;
+        public Vector2 minBounds;
+        public Vector2 maxBounds;
 
         private void Awake()
         {
@@ -22,29 +24,32 @@ namespace Domain.Managers
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0) && !Utils.IsPointerOverGameObject())
+            if (Input.GetMouseButtonDown(0))
             {
-                touchStart = Utils.GetMouseClickHit(Camera.main);
                 selectedObject = null;
-                var selectedObjectTransform = Utils.GetObjectAtPosition(Camera.main)?.transform;
+                var selectedObjectTransform = Utils.GetBuildCollider();
 
-                if (selectedObjectTransform != null && selectedObjectTransform.GetComponent<IDraggable>() != null 
+                if (selectedObjectTransform != null && selectedObjectTransform.transform.GetComponent<IDraggable>() != null 
                                                     && selectedObjectTransform.GetComponent<IDraggable>().IsDraggingEnabled())
                 {
                     selectedObject = selectedObjectTransform.GetComponent<IDraggable>();
+                    var selectedObjectPosition = selectedObjectTransform.transform.position;
+                    var destination = new Vector3(selectedObjectPosition.x,
+                        selectedObjectPosition.y, transform.position.z);
+                    transform.DOMove(destination, 0.35f).SetEase(Ease.OutQuad).OnComplete(
+                        () =>
+                        {
+                            selectedObject.Interact();
+                        });
+                    return;
                 }
-
-                if (touchStart != Vector3.zero)
-                {
-                    touchStarted = true;
-                }
-                else
-                {
-                    touchStarted = false;
-                }
-            }else if (Input.GetMouseButton(0) && touchStarted)
+                touchStart = Utils.GetMouseClickAtFloor();
+                touchStarted = touchStart != Vector3.zero;
+            }
+            
+            if (Input.GetMouseButton(0) && touchStarted)
             {
-                var direction = touchStart - Utils.GetMouseClickHit(Camera.main);
+                var direction = touchStart - Utils.GetMouseClickAtFloor();
 
                 if (selectedObject == null)
                 {
@@ -53,7 +58,7 @@ namespace Domain.Managers
                 }
                 else
                 {
-                    selectedObject.UpdatePosition(new Vector3(Mathf.RoundToInt(Utils.GetMouseClickHit(Camera.main).x), Mathf.RoundToInt(Utils.GetMouseClickHit(Camera.main).y)));
+                    selectedObject.UpdatePosition(new Vector3(Mathf.RoundToInt(Utils.GetMouseClickAtFloor().x), Mathf.RoundToInt(Utils.GetMouseClickAtFloor().y)));
                 }
                 
                 
@@ -71,12 +76,6 @@ namespace Domain.Managers
                 {
                     touchStarted = false;
                 }
-            }
-            
-            if (selectedObject != null)
-            {
-                var lerpVector = Vector3.Lerp(transform.position, selectedObject.GetTransform().position, 20 * Time.deltaTime);
-                transform.position = new Vector3(lerpVector.x, lerpVector.y, transform.position.z);
             }
         }
     }

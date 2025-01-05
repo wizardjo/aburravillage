@@ -9,31 +9,22 @@ namespace Domain.Utilities
         private const int RAY_DEPTH   = 100;
         private const int BUILDINGS_LAYERS = 6;
         
-        public static Vector3 GetMouseClickHit(Camera mainCamera)
+        public static Vector3 GetMouseClickAtFloor()
         {
-            if (mainCamera == null)
-            {
-                mainCamera = Camera.main;
-            }
-            
-            int layerMask = 1 << FLOOR_LAYER_MASK;
+            var mainCamera = Camera.main;
+            const int layerMask = 1 << FLOOR_LAYER_MASK;
             
             return Physics.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), 
                 mainCamera.transform.forward*RAY_DEPTH, out RaycastHit hit, Mathf.Infinity, layerMask) 
                 ? new Vector3(hit.point.x, hit.point.y, 0) : Vector3.zero;
         }
 
-        public static Collider GetObjectAtPosition(Camera mainCamera)
+        public static Collider GetBuildCollider()
         {
-            if (mainCamera == null)
-            {
-                return null;
-            }
-            
-            int layerMask = 1 << BUILDINGS_LAYERS;
-            
-            return Physics.Raycast(mainCamera.ScreenToWorldPoint(Input.mousePosition), 
-                mainCamera.transform.forward*RAY_DEPTH, out RaycastHit hit, Mathf.Infinity, layerMask) 
+            const int layerMask = 1 << BUILDINGS_LAYERS;
+
+            return Physics.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), 
+                Camera.main.transform.forward*RAY_DEPTH, out RaycastHit hit, Mathf.Infinity, layerMask) 
                 ? hit.collider : null;
         }
 
